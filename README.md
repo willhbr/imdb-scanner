@@ -1,0 +1,2 @@
+Chuck the script (imdb2.rb) into the root folder of your movies directory and run it.
+The films that can be found will be saved to _films.txt_ and the ones that cannot be found will go into _notfound.txt_.
