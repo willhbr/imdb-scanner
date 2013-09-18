@@ -3,11 +3,11 @@
 Either:
 * Chuck the script (lookup.rb) into the root folder of your movies directory and run it.
 * Pass the name of a file with a list of file names or paths, eg:
-```bash
+```
 ruby lookup.rb path_to_file.txt
 ```
 You can get a list files with the find command, like so:
-```bash
+```
 find . >> film_list.txt
 ```
 
