@@ -1,5 +1,6 @@
 #! /usr/local/rvm/rubies/ruby-1.9.3-p392/bin/ruby
 # Developed by Javanut13. IMDb searches performed with mymovieapi.com.
+
 require 'net/http'
 require 'json'
 
@@ -23,6 +24,11 @@ def lookup_movie(filename, output, notfound)
   end
 end
 
+def do_film(item, output, notfound)
+  if VALID_ENDINGS.collect {|e| item.downcase.end_with? e}.any?
+    lookup_movie(item, output, notfound)
+  end
+end
 VALID_ENDINGS = ["avi", "mp4"]
 def do_folder(path, output, notfound, completed)
   Dir.foreach(path) do |item|
@@ -30,21 +36,32 @@ def do_folder(path, output, notfound, completed)
     if File.directory? item
       do_folder(item, output, notfound, completed)
     else
-      complete = "#{path}/#{item}"
-      if VALID_ENDINGS.collect {|e| item.downcase.end_with? e}.any?
-        lookup_movie(item, output, notfound)
-        completed += 1
-        print "Completed #{completed}\r"
-      end
+      do_film(item, output, notfound)
+      completed += 1
+      print "Completed #{completed}\r"
     end
   end
 end
+
+def from_file(file, output, notfound)
+  File.read(file).split("\n").each do |path|
+    item = path.split("/")[-1]
+    do_film(item, output, notfound)
+  end
+end
+
 path = Dir.pwd
 filename = "films.txt"
 notfoundname = "notfound.txt"
 output = File.open(filename, "w")
 notfound = File.open(notfoundname, "w")
-do_folder(path, output, notfound, 0)
+
+if !ARGV[0]
+  do_folder(path, output, notfound, 0)
+else
+  from_file(ARGV[0], output, notfound)
+end
 puts "\nFinished\nFilm list in #{filename}\nFilms not found in #{notfoundname}"
+
 output.close
 notfound.close
